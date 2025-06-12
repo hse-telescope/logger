@@ -1,5 +1,5 @@
 package logger
 
 type Config struct {
-	Mode string `json:"mode"`
+	Mode string `json:"mode" yaml:"mode"`
 }
