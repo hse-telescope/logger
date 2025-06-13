@@ -3,6 +3,10 @@ package logger
 import (
 	"log/slog"
 	"os"
+
+	slogmulti "github.com/samber/slog-multi"
+	"go.opentelemetry.io/contrib/bridges/otelslog"
+	"go.opentelemetry.io/otel/log/global"
 )
 
 // Logger instance used by external software.
@@ -28,10 +32,14 @@ func Init(c Config) error {
 		level = slog.LevelDebug
 	}
 
-	h := slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
-		Level: level,
-	})
-	logger = slog.New(h)
+	logger = slog.New(
+		slogmulti.Fanout(
+			slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
+				Level: level,
+			}),
+			otelslog.NewHandler("otel", otelslog.WithLoggerProvider(global.GetLoggerProvider())),
+		),
+	)
 
 	return nil
 }
