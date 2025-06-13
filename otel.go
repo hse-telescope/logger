@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"go.opentelemetry.io/otel/exporters/otlp/otlplog/otlploggrpc"
+	"go.opentelemetry.io/otel/exporters/stdout/stdoutlog"
 	"go.opentelemetry.io/otel/log/global"
 	sdk "go.opentelemetry.io/otel/sdk/log"
 	"go.opentelemetry.io/otel/sdk/resource"
@@ -16,8 +17,13 @@ func SetupLogger(ctx context.Context, serviceName string, otlpTracesURL string, 
 		return err
 	}
 
+	stdoutLogsExporter, err := stdoutlog.New(stdoutlog.WithPrettyPrint())
+	if err != nil {
+		return err
+	}
+
 	resource, err := resource.New(
-		context.Background(),
+		ctx,
 		resource.WithSchemaURL(semconv.SchemaURL),
 		resource.WithAttributes(semconv.ServiceNameKey.String(serviceName)),
 	)
@@ -26,6 +32,7 @@ func SetupLogger(ctx context.Context, serviceName string, otlpTracesURL string, 
 	}
 
 	loggerProvider := sdk.NewLoggerProvider(
+		sdk.WithProcessor(sdk.NewBatchProcessor(stdoutLogsExporter)),
 		sdk.WithProcessor(sdk.NewBatchProcessor(otlpLogsExporter)),
 		sdk.WithResource(resource),
 	)
