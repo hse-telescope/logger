@@ -38,7 +38,7 @@ func SetupLogger(ctx context.Context, serviceName string, otlpTracesURL string, 
 	)
 	global.SetLoggerProvider(loggerProvider)
 
-	err = Init(c)
+	err = setup(c)
 	if err != nil {
 		return err
 	}

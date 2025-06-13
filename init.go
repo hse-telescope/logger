@@ -12,16 +12,7 @@ import (
 // Logger instance used by external software.
 var logger *slog.Logger
 
-// Setting up default logger in development conf
-func init() {
-	err := Init(Config{})
-	if err != nil {
-		panic(err)
-	}
-}
-
-// Init ...
-func Init(c Config) error {
+func setup(c Config) error {
 	var level slog.Level
 	switch c.Mode {
 	case Staging:
