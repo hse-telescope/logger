@@ -12,7 +12,7 @@ import (
 )
 
 func SetupLogger(ctx context.Context, serviceName string, otlpTracesURL string, c Config) error {
-	otlpLogsExporter, err := otlploggrpc.New(ctx, otlploggrpc.WithEndpoint(otlpTracesURL))
+	otlpLogsExporter, err := otlploggrpc.New(ctx, otlploggrpc.WithEndpointURL(otlpTracesURL))
 	if err != nil {
 		return err
 	}
